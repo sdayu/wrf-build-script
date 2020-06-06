@@ -7,7 +7,8 @@ echo "----------------------------------------"
 sudo apt update
 sudo apt install -y \
          netcdf-bin libnetcdf-mpi-dev libnetcdf-pnetcdf-dev libnetcdff-dev libpnetcdf-dev \
-    	 libhdf5-openmpi-dev libfl-dev libpng-dev build-essential cmake byacc git
+    	 libhdf5-openmpi-dev libfl-dev libpng-dev \
+	 build-essential cmake byacc git csh
 
 CURRENT_DIR=$(pwd)
 PROXY_LIB=$(pwd)/dep-libs
@@ -31,13 +32,20 @@ if [ ! -d $PROXY_LIB/include ]; then
 fi
 
 if [ ! -e $PROXY_LIB/lib/libhdf5.so ]; then
-	sudo ln -s $PROXY_LIB/lib/libhdf5_openmpi.so $PROXY_LIB/lib/libhdf5.so
+	sudo ln -sf $PROXY_LIB/lib/libhdf5_openmpi.so $PROXY_LIB/lib/libhdf5.so
 fi
+if [ $? != 0 ]; then
+	echo "Cannot create symlink $PROXY_LIB/lib/libhdf5.so"
+	exit 1
+fi
+
 if [ ! -e $PROXY_LIB/lib/libhdf5_hl.so ]; then
-	sudo ln -s $PROXY_LIB/lib/libhdf5_hl_openmpi.so $PROXY_LIB/lib/libhdf5_hl.so
+	sudo ln -sf $PROXY_LIB/lib/libhdf5_openmpi_hl.so $PROXY_LIB/lib/libhdf5_hl.so
 fi
-
-
+if [ $? != 0 ]; then
+	echo "Cannot create synlink $PROXY_LIB/lib/libhdf5_hl.so"
+	exit 1
+fi
 
 
 echo "----------------------------------------"
@@ -74,7 +82,10 @@ echo "Compile WRF"
 echo "----------------------------------------"
 
 cd WRF
-./configure 
+
+if [ ! -e configure.wrf ]; then
+	./configure 
+fi
 
 if [ ! -e configure.wrf ]; then
 	echo "Error cannot continue"
@@ -115,7 +126,10 @@ echo "----------------------------------------"
 echo "Compile WPS"
 echo "----------------------------------------"
 cd WPS
-./configure
+if [ ! -e configure.wps ]; then
+	./configure
+fi
+
 if [ ! -e configure.wps ]; then
 	echo "Error cannot continue"
 	exit 1
@@ -129,14 +143,21 @@ fi
 
 cd ..
 
-if [ ! -e $PROXY_LIB/tmp/prep_chem_sources_v1.5_24aug2015.tar.gz ]; then
-	wget ftp://aftp.fsl.noaa.gov/divisions/taq/global_emissions/prep_chem_sources_v1.5_24aug2015.tar.gz --directory-prefix=$PROXY_LIB/tmp/
+
+echo "----------------------------------------"
+echo "Compile PREP-CHEM-SRC 1.5"
+echo "----------------------------------------"
+
+if [ ! -e $PROXY_LIB/tmp/PREP-CHEM-SRC-1.5.tar.gz ]; then
+	wget http://fivedots.coe.psu.ac.th/~thanathip.l/download/WRF/PREP-CHEM-SRC-1.5.tar.gz --directory-prefix=$PROXY_LIB/tmp/
 fi
 
 if [ ! -d prep_chem_sources_v1.5 ]; then
-	tar zxvf $PROXY_LIB/tmp/prep_chem_sources_v1.5_24aug2015.tar.gz
+	tar zxvf $PROXY_LIB/tmp/PREP-CHEM-SRC-1.5.tar.gz
 fi
 
 
+cd PREP-CHEM-SRC-1.5/bin/build
+make OPT=gfortran.wrf CHEM=RADM_WRF_FIM
 
-
+cd ../../..

@@ -71,37 +71,6 @@ else
 fi
 
 
-export NETCDF=$PROXY_LIB
-export WRF_CHEM=1
-export WRF_KPP=1
-export YACC='/usr/bin/yacc -d'
-export FLEX_LIB_DIR='/usr/lib/x86_64-linux-gnu'
-
-echo "----------------------------------------"
-echo "Compile WRF"
-echo "----------------------------------------"
-
-cd WRF
-
-if [ ! -e configure.wrf ]; then
-	./configure 
-fi
-
-if [ ! -e configure.wrf ]; then
-	echo "Error cannot continue"
-	exit 1
-fi
-
-./compile -j 4 em_real
-if [ $? != 0 ]; then
-	echo "Compile error"
-	exit 1
-fi
-
-cd ..
-
-
-
 echo "----------------------------------------"
 echo "Check and Compile Jasper"
 echo "----------------------------------------"
@@ -122,12 +91,52 @@ sudo make install
 cd $CURRENT_DIR
 
 
+
+export NETCDF=$PROXY_LIB
+export WRF_CHEM=1
+export WRF_KPP=1
+export YACC='/usr/bin/yacc -d'
+export FLEX_LIB_DIR='/usr/lib/x86_64-linux-gnu'
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/mpich/lib
+
+
+echo "----------------------------------------"
+echo "Compile WRF"
+echo "----------------------------------------"
+
+cd WRF
+
+if [ ! -e configure.wrf ]; then
+	./configure << EOF
+34
+1
+EOF
+fi
+
+if [ ! -e configure.wrf ]; then
+	echo "Error cannot continue"
+	exit 1
+fi
+
+./compile -j 4 em_real
+if [ $? != 0 ]; then
+	echo "Compile error"
+	exit 1
+fi
+
+cd ..
+
+
+
+
 echo "----------------------------------------"
 echo "Compile WPS"
 echo "----------------------------------------"
 cd WPS
 if [ ! -e configure.wps ]; then
-	./configure
+	./configure << EOF
+3
+EOF
 fi
 
 if [ ! -e configure.wps ]; then

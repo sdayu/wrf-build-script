@@ -1,0 +1,5 @@
+RUN ./build-docker
+
+Run ./activate
+
+Run ./build-wrf

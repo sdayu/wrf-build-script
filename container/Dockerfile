@@ -8,7 +8,7 @@ RUN echo 'deb http://mirror.psu.ac.th/debian/ buster main contrib non-free' > /e
 RUN apt update && apt upgrade -y && apt install -y \
 	build-essential cmake byacc git csh wget sudo \
 	netcdf-bin libnetcdf-mpi-dev libnetcdf-pnetcdf-dev libnetcdff-dev libpnetcdf-dev \
-	libhdf5-openmpi-dev libfl-dev libpng-dev 
+	libhdf5-openmpi-dev libfl-dev libpng-dev ncl-ncarg 
 
 
 RUN wget http://www.ece.uvic.ca/~frodo/jasper/software/jasper-2.0.14.tar.gz --directory-prefix=/tmp/ && \
@@ -28,9 +28,9 @@ ENV WORK_DIR="${HOME_DIR}/wrf-build" \
 RUN /usr/sbin/useradd --create-home --shell /bin/bash ${USER}
 RUN /usr/sbin/usermod -append --groups sudo ${USER}
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/usr/local/lib" >> "${HOME_DIR}/.bashrc"
+
 
 USER ${USER}
 WORKDIR ${WORK_DIR}
-
-
 

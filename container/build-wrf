@@ -8,7 +8,7 @@ sudo apt update
 sudo apt install -y \
          netcdf-bin libnetcdf-mpi-dev libnetcdf-pnetcdf-dev libnetcdff-dev libpnetcdf-dev \
     	 libhdf5-openmpi-dev libfl-dev libpng-dev \
-	 build-essential cmake byacc git csh
+	 build-essential cmake byacc git csh ncl-ncarg 
 
 CURRENT_DIR=$(pwd)
 PROXY_LIB=$(pwd)/dep-libs
@@ -91,14 +91,16 @@ sudo make install
 cd $CURRENT_DIR
 
 
+export JASPERLIB=/usr/local/lib/
+export JASPERINC=/usr/local/include
 
 export NETCDF=$PROXY_LIB
 export WRF_CHEM=1
 export WRF_KPP=1
 export YACC='/usr/bin/yacc -d'
 export FLEX_LIB_DIR='/usr/lib/x86_64-linux-gnu'
-# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/mpich/lib
-
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/usr/local/lib
+export WRFIO_NCD_LARGE_FILE_SUPPORT=1
 
 echo "----------------------------------------"
 echo "Compile WRF"

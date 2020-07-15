@@ -20,17 +20,19 @@ RUN wget http://www.ece.uvic.ca/~frodo/jasper/software/jasper-2.0.14.tar.gz --di
 	make install 
 
 
-ENV USER="user"
+ARG USER="user"
+ARG UID=1000
+ARG GID=1000
 ENV HOME_DIR="/home/${USER}"
-ENV WORK_DIR="${HOME_DIR}/wrf-build" \
+ENV WORK_DIR="${HOME_DIR}/projects" \
 	PATH="${HOME_DIR}/.local/bin:${PATH}"
 
-RUN /usr/sbin/useradd --create-home --shell /bin/bash ${USER}
+RUN /usr/sbin/useradd --create-home --shell /bin/bash -m ${USER} --uid=${UID}
 RUN /usr/sbin/usermod -append --groups sudo ${USER}
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 RUN echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/usr/local/lib" >> "${HOME_DIR}/.bashrc"
 
 
-USER ${USER}
+USER ${UID}:${GID}
 WORKDIR ${WORK_DIR}
 

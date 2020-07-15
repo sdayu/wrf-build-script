@@ -1,3 +1,11 @@
 #!/bin/bash
 
-docker build -t wrf-image .
+# docker build -t wrf-image .
+
+export UID=$(id -u)
+export GID=$(id -g)
+docker build --build-arg USER=$USER \
+	     --build-arg UID=$UID \
+	     --build-arg GID=$GID \
+	     -t wrf-image \
+	     .
